@@ -40,7 +40,7 @@ jobs:
         #tar -cf file_combined.tzst file_combined.zstd
         ls file_combined.tzst
         echo "Running tar + zstd using --use-compress-program"
-        (Measure-Command { tar.exe --use-compress-program "zstd -d" -cf file.tzst -P file.txt | Out-Default }).ToString()
+        (Measure-Command { tar.exe --use-compress-program "zstd" -cf file.tzst -P file.txt | Out-Default }).ToString()
         #tar.exe --use-compress-program "zstd -T0" -cf file.tzst file.txt
         #tar.exe -I zstd -cf file.tzst file.txt
         ls file.tzst
