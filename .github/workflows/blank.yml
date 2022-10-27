@@ -19,20 +19,30 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v3
 
-    - name: Test zstd
+    - name: Create multiple files
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
+        echo "Create random files"
+        mkdir cache
+        for i in {1..200}; do dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+    
+    - name: Test with zstd only
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         zstd.exe -V
-        C:\windows\System32\tar.exe --version
-        echo "Create random file"
-        dd if=/dev/urandom of=file.txt count=150 bs=1048576
+        tar.exe --version
         echo "Running zstd standalone"
-        (Measure-Command { zstd.exe -o file.zstd file.txt | Out-Default }).ToString()
+        (Measure-Command { zstd.exe -o file.zstd cache | Out-Default }).ToString()
         ls file.zstd
+        
+    - name: Test with tar then zstd
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
         echo "Running tar standalone"
         (Measure-Command { tar -cf file.tar file.txt | Out-Default }).ToString()
         #tar -cf file.tar file.txt
         ls file.tar
+    
         echo "Running tar + zstd in two steps"
         (Measure-Command { zstd.exe -o file_combined.zstd file.txt | Out-Default }).ToString()
         #zstd.exe -o file_combined.zstd file.txt
