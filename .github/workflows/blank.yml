@@ -30,7 +30,8 @@ jobs:
         (Measure-Command { tar -cf file.tar cache | Out-Default }).ToString()
         ls file.tar
         (Measure-Command { tar -xvf file.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm -r file.tar windows_tmp/*
+        rm file.tar
+        rm -r windows_tmp/*
     
     - name: Test with tar then zstd
       run: |
@@ -40,7 +41,8 @@ jobs:
         ls file_combined.tzst
         (Measure-Command { zstd -d -o file_combined.tar file_combined.tzst | Out-Default }).ToString()
         (Measure-Command { tar -xvf file_combined.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm -r file_combined.tzst windows_tmp/*
+        rm file_combined.tzst
+        rm -r windows_tmp/*
         
     - name: Test with tar with zstd
       run: |
@@ -123,6 +125,7 @@ jobs:
         echo "Running tar + zstd in two steps compression then decompression"
         time tar -cf file_combined_gnu.tar cache
         time zstd -o file_combined_gnu.tzst file_combined_gnu.tar
+        rm file_combined_gnu.tar
         ls file_combined_gnu.tzst
         time zstd -d -o file_combined_gnu.tar file_combined_gnu.tzst
         time tar -xvf file_combined_gnu.tar -P -C linux_tmp
