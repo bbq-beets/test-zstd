@@ -40,21 +40,18 @@ jobs:
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Running tar standalone"
         (Measure-Command { tar -cf file.tar cache | Out-Default }).ToString()
-        #tar -cf file.tar file.txt
         ls file.tar
     
     - name: Test with tar then zstd
       run: |
         echo "Running tar + zstd in two steps"
-        (Measure-Command { zstd.exe -o file_combined.zstd cache | Out-Default }).ToString()
-        (Measure-Command { tar -cf file_combined.tzst file_combined.zstd | Out-Default }).ToString()
+        (Measure-Command { tar -cf file_combined.tar cache | Out-Default }).ToString()
+        (Measure-Command { zstd.exe -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         ls file_combined.tzst
         
     - name: Test with tar with zstd
       run: |
         echo "Running tar + zstd using --use-compress-program"
         (Measure-Command { tar.exe --use-compress-program "zstd" -cf file.tzst -P cache | Out-Default }).ToString()
-        #tar.exe --use-compress-program "zstd -T0" -cf file.tzst file.txt
-        #tar.exe -I zstd -cf file.tzst file.txt
         ls file.tzst
         echo "Done"
