@@ -52,6 +52,36 @@ jobs:
     - name: Test with tar with zstd
       run: |
         echo "Running tar + zstd using --use-compress-program"
+        #(Measure-Command { tar --use-compress-program zstd -cf file.tzst -P cache | Out-Default }).ToString()
+        #ls file.tzst
+        echo "Done"
+        
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    - name: Test with tar only
+      run: |
+        zstd -V
+        tar --version
+        $ErrorActionPreference = 'SilentlyContinue'
+        echo "Running tar standalone"
+        (Measure-Command { tar -cf file.tar cache | Out-Default }).ToString()
+        ls file.tar
+    
+    - name: Test with tar then zstd
+      run: |
+        echo "Running tar + zstd in two steps"
+        (Measure-Command { tar -cf file_combined.tar cache | Out-Default }).ToString()
+        (Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
+        ls file_combined.tzst
+        
+    - name: Test with tar with zstd
+      run: |
+        echo "Running tar + zstd using --use-compress-program"
         (Measure-Command { tar --use-compress-program zstd -cf file.tzst -P cache | Out-Default }).ToString()
         ls file.tzst
         echo "Done"
