@@ -29,7 +29,7 @@ jobs:
         echo "Running tar standalone compression then decompression"
         (Measure-Command { tar -cf file.tar cache | Out-Default }).ToString()
         ls file.tar
-        (Measure-Command { tar -xvf file.tar -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { tar -xf file.tar -C windows_tmp | Out-Default }).ToString()
         rm file.tar
         rm -r windows_tmp/*
     
@@ -41,7 +41,7 @@ jobs:
         rm file_combined.tar
         ls file_combined.tzst
         (Measure-Command { zstd -d -o file_combined.tar file_combined.tzst | Out-Default }).ToString()
-        (Measure-Command { tar -xvf file_combined.tar -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { tar -xf file_combined.tar -C windows_tmp | Out-Default }).ToString()
         rm file_combined.tzst
         rm -r windows_tmp/*
         
@@ -79,7 +79,7 @@ jobs:
         echo "Running tar standalone compression then decompression"
         (Measure-Command { tar -cf file_gnu.tar cache | Out-Default }).ToString()
         ls file_gnu.tar
-        (Measure-Command { tar -xvf file_gnu.tar -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { tar -xf file_gnu.tar -C windows_tmp | Out-Default }).ToString()
         rm file_gnu.tar
         rm -r windows_tmp/*
     
@@ -88,9 +88,10 @@ jobs:
         echo "Running tar + zstd in two steps compression then decompression"
         (Measure-Command { tar -cf file_combined_gnu.tar cache | Out-Default }).ToString()
         (Measure-Command { zstd -o file_combined_gnu.tzst file_combined_gnu.tar | Out-Default }).ToString()
+        rm file_combined_gnu.tar
         ls file_combined_gnu.tzst
         (Measure-Command { zstd -d -o file_combined_gnu.tar file_combined_gnu.tzst | Out-Default }).ToString()
-        (Measure-Command { tar -xvf file_combined_gnu.tar -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { tar -xf file_combined_gnu.tar -C windows_tmp | Out-Default }).ToString()
         rm file_combined_gnu.tzst
         rm -r windows_tmp/*
         
@@ -99,10 +100,21 @@ jobs:
         echo "Running tar + zstd using --use-compress-program compression then decompression"
         (Measure-Command { tar --use-compress-program zstd -cf file_gnu.tzst -P cache | Out-Default }).ToString()
         ls file_gnu.tzst
-        (Measure-Command { tar --use-compress-program "zstd -d" -xvf file_gnu.tzst -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { tar --use-compress-program "zstd -d" -xf file_gnu.tzst -C windows_tmp | Out-Default }).ToString()
         rm file_gnu.tzst 
         rm -r windows_tmp/*
         echo "Done"
+    
+    - name: Test with tar then zstd for compression then decompress using tar with zstd
+      run: |
+        echo "Running tar + zstd in two steps compression then decompression"
+        (Measure-Command { tar -cf file_combined_gnu.tar cache | Out-Default }).ToString()
+        (Measure-Command { zstd -o file_combined_gnu.tzst file_combined_gnu.tar | Out-Default }).ToString()
+        rm file_combined_gnu.tar
+        ls file_combined_gnu.tzst
+        (Measure-Command { tar --use-compress-program "zstd -d" -xf file_combined_gnu.tzst -C windows_tmp | Out-Default }).ToString()
+        rm file_combined_gnu.tzst 
+        rm -r windows_tmp/*
   
   linux_tar:
     runs-on: ubuntu-latest
@@ -121,7 +133,7 @@ jobs:
         echo "Running tar standalone compression then decompression"
         time tar -cf file_gnu.tar cache
         ls file_gnu.tar
-        time tar -xvf file_gnu.tar -C linux_tmp
+        time tar -xf file_gnu.tar -C linux_tmp
         rm -r file_gnu.tar linux_tmp/*
     
     - name: Test with tar then zstd
@@ -132,14 +144,25 @@ jobs:
         rm file_combined_gnu.tar
         ls file_combined_gnu.tzst
         time zstd -d -o file_combined_gnu.tar file_combined_gnu.tzst
-        time tar -xvf file_combined_gnu.tar -C linux_tmp
-        rm -r file_combined_gnu.tzst
+        time tar -xf file_combined_gnu.tar -C linux_tmp
+        rm -r file_combined_gnu.tzst linux_tmp/*
         
     - name: Test with tar with zstd
       run: |
         echo "Running tar + zstd using --use-compress-program compression then decompression"
         time tar --use-compress-program zstd -cf file_gnu.tzst -P cache
         ls file_gnu.tzst
-        time tar --use-compress-program "zstd -d" -xvf file_gnu.tzst -C linux_tmp
+        time tar --use-compress-program "zstd -d" -xf file_gnu.tzst -C linux_tmp
+        rm -r file_gnu.tzst linux_tmp/*
+        echo "Done"
+
+    - name: Test with tar then zstd for compression then decompress using tar with zstd
+      run: |
+        echo "Running tar + zstd in two steps compression then decompression"
+        time tar -cf file_combined_gnu.tar cache
+        time zstd -o file_combined_gnu.tzst file_combined_gnu.tar
+        rm file_combined_gnu.tar
+        ls file_combined_gnu.tzst
+        time tar --use-compress-program "zstd -d" -xf file_gnu.tzst -C linux_tmp
         rm -r file_gnu.tzst linux_tmp/*
         echo "Done"
