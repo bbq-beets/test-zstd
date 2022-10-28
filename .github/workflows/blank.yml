@@ -17,7 +17,8 @@ jobs:
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
-        mkdir windows_tmp cache
+        mkdir windows_tmp
+        mkdir cache
         for($i = 1 ; $i -le 500 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - name: Test with tar only
@@ -29,7 +30,7 @@ jobs:
         (Measure-Command { tar -cf file.tar cache | Out-Default }).ToString()
         ls file.tar
         (Measure-Command { tar -xvf file.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm file.tar windows_tmp/*
+        rm -r file.tar windows_tmp/*
     
     - name: Test with tar then zstd
       run: |
@@ -39,7 +40,7 @@ jobs:
         ls file_combined.tzst
         (Measure-Command { zstd -d -o file_combined.tar file_combined.tzst | Out-Default }).ToString()
         (Measure-Command { tar -xvf file_combined.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm file_combined.tzst windows_tmp/*
+        rm -r file_combined.tzst windows_tmp/*
         
     - name: Test with tar with zstd
       run: |
@@ -56,7 +57,8 @@ jobs:
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
-        mkdir cache windows_tmp
+        mkdir windows_tmp
+        mkdir cache
         for($i = 1 ; $i -le 500 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
 
     - if: ${{ runner.os == 'Windows' }}
@@ -75,7 +77,7 @@ jobs:
         (Measure-Command { tar -cf file_gnu.tar cache | Out-Default }).ToString()
         ls file_gnu.tar
         (Measure-Command { tar -xvf file_gnu.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm file_gnu.tar windows_tmp/*
+        rm -r file_gnu.tar windows_tmp/*
     
     - name: Test with tar then zstd
       run: |
@@ -85,7 +87,7 @@ jobs:
         ls file_combined_gnu.tzst
         (Measure-Command { zstd -d -o file_combined_gnu.tar file_combined_gnu.tzst | Out-Default }).ToString()
         (Measure-Command { tar -xvf file_combined_gnu.tar -P -C windows_tmp | Out-Default }).ToString()
-        rm file_combined_gnu.tzst windows_tmp/*
+        rm -r file_combined_gnu.tzst windows_tmp/*
         
     - name: Test with tar with zstd
       run: |
@@ -114,7 +116,7 @@ jobs:
         time tar -cf file_gnu.tar cache
         ls file_gnu.tar
         time tar -xvf file_gnu.tar -P -C linux_tmp
-        rm file_gnu.tar linux_tmp/*
+        rm -r file_gnu.tar linux_tmp/*
     
     - name: Test with tar then zstd
       run: |
@@ -124,7 +126,7 @@ jobs:
         ls file_combined_gnu.tzst
         time zstd -d -o file_combined_gnu.tar file_combined_gnu.tzst
         time tar -xvf file_combined_gnu.tar -P -C linux_tmp
-        rm file_combined_gnu.tzst
+        rm -r file_combined_gnu.tzst
         
     - name: Test with tar with zstd
       run: |
@@ -132,5 +134,5 @@ jobs:
         time tar --use-compress-program zstd -cf file_gnu.tzst -P cache
         ls file_gnu.tzst
         time tar --use-compress-program "zstd -d" -xvf file_gnu.tzst -P -C linux_tmp
-        rm file_gnu.tzst linux_tmp/*
+        rm -r file_gnu.tzst linux_tmp/*
         echo "Done"
