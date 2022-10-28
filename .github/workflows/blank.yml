@@ -9,32 +9,16 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  windows_bsdtar:
     runs-on: windows-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
-
     - name: Create multiple files
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
         mkdir cache
-        for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
-        ls cache
-    
-#    - name: Test with zstd only
-#      run: |
-#        $ErrorActionPreference = 'SilentlyContinue'
-#        zstd.exe -V
-#        tar.exe --version
-#        echo "Running zstd standalone"
-#        (Measure-Command { zstd.exe -o file.zstd cache | Out-Default }).ToString()
-#        ls file.zstd
+        for($i = 1 ; $i -le 500 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - name: Test with tar only
       run: |
@@ -60,7 +44,18 @@ jobs:
         #(Measure-Command { tar --use-compress-program zstd -cf file.tzst -P cache | Out-Default }).ToString()
         #ls file.tzst
         echo "Done"
-        
+  
+  windows_gnutar:
+    runs-on: windows-latest
+
+    steps:
+    - name: Create multiple files
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
+        echo "Create random files"
+        mkdir cache
+        for($i = 1 ; $i -le 500 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+
     - if: ${{ runner.os == 'Windows' }}
       name: Use GNU tar
       shell: cmd
@@ -90,6 +85,41 @@ jobs:
       run: |
         echo "Running tar + zstd using --use-compress-program"
         (Measure-Command { tar --use-compress-program zstd -cf file_gnu.tzst -P cache | Out-Default }).ToString()
+        ls file_gnu.tzst
+        rm file_gnu.tzst
+        echo "Done"
+  
+  linux_tar:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Create multiple files
+      run: |
+        echo "Create random files"
+        mkdir cache
+        for i in {1..500}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+
+    - name: Test with tar only
+      run: |
+        zstd -V
+        tar --version
+        echo "Running tar standalone"
+        time tar -cf file_gnu.tar cache
+        ls file_gnu.tar
+        rm file_gnu.tar
+    
+    - name: Test with tar then zstd
+      run: |
+        echo "Running tar + zstd in two steps"
+        time tar -cf file_combined_gnu.tar cache
+        time zstd -o file_combined_gnu.tzst file_combined_gnu.tar
+        ls file_combined_gnu.tzst
+        rm file_combined_gnu.tzst
+        
+    - name: Test with tar with zstd
+      run: |
+        echo "Running tar + zstd using --use-compress-program"
+        time tar --use-compress-program zstd -cf file_gnu.tzst -P cache
         ls file_gnu.tzst
         rm file_gnu.tzst
         echo "Done"
