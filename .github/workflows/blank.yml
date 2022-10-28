@@ -163,6 +163,6 @@ jobs:
         time zstd -o file_combined_gnu.tzst file_combined_gnu.tar
         rm file_combined_gnu.tar
         ls file_combined_gnu.tzst
-        time tar --use-compress-program "zstd -d" -xf file_gnu.tzst -C linux_tmp
-        rm -r file_gnu.tzst linux_tmp/*
+        time tar --use-compress-program "zstd -d" -xf file_combined_gnu.tzst -C linux_tmp
+        rm -r file_combined_gnu.tzst linux_tmp/*
         echo "Done"
