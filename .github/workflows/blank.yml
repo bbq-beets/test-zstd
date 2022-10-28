@@ -46,12 +46,12 @@ jobs:
       run: |
         echo "Running tar + zstd in two steps"
         (Measure-Command { tar -cf file_combined.tar cache | Out-Default }).ToString()
-        (Measure-Command { zstd.exe -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
+        (Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         ls file_combined.tzst
         
     - name: Test with tar with zstd
       run: |
         echo "Running tar + zstd using --use-compress-program"
-        (Measure-Command { tar.exe --use-compress-program "zstd" -cf file.tzst -P cache | Out-Default }).ToString()
+        (Measure-Command { tar --use-compress-program zstd -cf file.tzst -P cache | Out-Default }).ToString()
         ls file.tzst
         echo "Done"
