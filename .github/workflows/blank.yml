@@ -19,20 +19,20 @@ jobs:
         echo "Create random files"
         mkdir windows_tmp
         mkdir cache
-        #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/dickens.bz2 | bunzip2 dickens.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/mozilla.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/mr.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/nci.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/ooffice.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/osdb.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/reymont.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/samba.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/sao.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/webster.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/xml.bz2
-        wget https://sun.aei.polsl.pl//~sdeor/corpus/x-ray.bz2
-        ls
+        for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/dickens.bz2 | bunzip2 dickens.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/mozilla.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/mr.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/nci.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/ooffice.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/osdb.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/reymont.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/samba.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/sao.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/webster.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/xml.bz2
+        #wget https://sun.aei.polsl.pl//~sdeor/corpus/x-ray.bz2
+        #ls
         
     - name: Test with tar only
       run: |
@@ -65,7 +65,7 @@ jobs:
         (Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         rm file_combined.tar
         ls file_combined.tzst
-        (Measure-Command { tar --use-compress-program "zstd -d" -xf file_combined.tzst -C windows_tmp | Out-Default }).ToString()
+        #(Measure-Command { tar --use-compress-program "zstd -d" -xf file_combined.tzst -C windows_tmp | Out-Default }).ToString()
         rm file_combined.tzst
         rm -r windows_tmp/*
         
