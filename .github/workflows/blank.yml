@@ -26,14 +26,14 @@ jobs:
         mkdir cache
         for($i = 1 ; $i -le 200 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
     
-    - name: Test with zstd only
-      run: |
-        $ErrorActionPreference = 'SilentlyContinue'
-        zstd.exe -V
-        tar.exe --version
-        echo "Running zstd standalone"
-        (Measure-Command { zstd.exe -o file.zstd cache | Out-Default }).ToString()
-        ls file.zstd
+#    - name: Test with zstd only
+#      run: |
+#        $ErrorActionPreference = 'SilentlyContinue'
+#        zstd.exe -V
+#        tar.exe --version
+#        echo "Running zstd standalone"
+#        (Measure-Command { zstd.exe -o file.zstd cache | Out-Default }).ToString()
+#        ls file.zstd
         
     - name: Test with tar only
       run: |
