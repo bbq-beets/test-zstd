@@ -24,7 +24,7 @@ jobs:
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
         mkdir cache
-        for i in {1..200}; do dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+        for($i = 1 ; $i -le 200 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
     
     - name: Test with zstd only
       run: |
