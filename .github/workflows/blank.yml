@@ -97,18 +97,6 @@ jobs:
         #(Measure-Command { tar --use-compress-program zstd -cf file.tzst -P cache | Out-Default }).ToString()
         #ls file.tzst
         echo "Done"
-  
-  windows_gnutar:
-    runs-on: windows-latest
-
-    steps:
-    - name: Create multiple files
-      run: |
-        $ErrorActionPreference = 'SilentlyContinue'
-        echo "Create random files"
-        mkdir windows_tmp
-        mkdir cache
-        for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
 
     - if: ${{ runner.os == 'Windows' }}
       name: Use GNU tar
@@ -117,7 +105,7 @@ jobs:
         echo "Adding GNU tar to PATH"
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
 
-    - name: Test with tar only
+    - name: Test with gnutar only
       run: |
         zstd -V
         tar --version
@@ -129,7 +117,7 @@ jobs:
         rm file_gnu.tar
         rm -r windows_tmp/*
     
-    - name: Test with tar then zstd
+    - name: Test with gnutar then zstd
       run: |
         echo "Running tar + zstd in two steps compression then decompression"
         (Measure-Command { tar -cf file_combined_gnu.tar cache | Out-Default }).ToString()
@@ -141,7 +129,7 @@ jobs:
         rm file_combined_gnu.tzst
         rm -r windows_tmp/*
         
-    - name: Test with tar with zstd
+    - name: Test with gnutar with zstd
       run: |
         echo "Running tar + zstd using --use-compress-program compression then decompression"
         (Measure-Command { tar --use-compress-program zstd -cf file_gnu.tzst -P cache | Out-Default }).ToString()
@@ -151,7 +139,7 @@ jobs:
         rm -r windows_tmp/*
         echo "Done"
     
-    - name: Test with tar then zstd for compression then decompress using tar with zstd
+    - name: Test with gnutar then zstd for compression then decompress using gnutar with zstd
       run: |
         echo "Running tar + zstd in two steps compression then decompression"
         (Measure-Command { tar -cf file_combined_gnu.tar cache | Out-Default }).ToString()
@@ -170,7 +158,22 @@ jobs:
       run: |
         echo "Create random files"
         mkdir cache linux_tmp
-        for i in {1..2000}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+        git clone https://github.com/telescopejs/telescope.git
+        #for i in {1..2000}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - run: |
+        cd telescope
+        npm install
+        du -sh node_modules
+        cp -r node_modules/ ../cache/tmp1/
+        cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp3/
+        cp -r node_modules/ ../cache/tmp4/
+        du -sh ../cache
 
     - name: Test with tar only
       run: |
