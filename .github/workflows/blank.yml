@@ -19,20 +19,22 @@ jobs:
         echo "Create random files"
         mkdir windows_tmp
         mkdir cache
-        for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/dickens.bz2 | bunzip2 dickens.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/mozilla.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/mr.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/nci.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/ooffice.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/osdb.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/reymont.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/samba.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/sao.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/webster.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/xml.bz2
-        #wget https://sun.aei.polsl.pl//~sdeor/corpus/x-ray.bz2
-        #ls
+        git clone https://github.com/telescopejs/telescope.git
+        #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - run: |
+        cd telescope
+        npm install
+        du -sh node_modules
+        cp -r node_modules/* ../cache/tmp1/
+        cp -r node_modules/* ../cache/tmp2/
+        cp -r node_modules/* ../cache/tmp3/
+        cp -r node_modules/* ../cache/tmp4/
+        du -sh ../cache
         
     - name: Test with tar only
       run: |
