@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: 7z performance
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  windows_other:
+    runs-on: windows-latest
+
+    steps:
+    - name: Create multiple files
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
+        echo "Create random files"
+        mkdir windows_tmp
+        mkdir cache
+        git clone https://github.com/telescopejs/telescope.git
+        #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - run: |
+        cd telescope
+        npm install
+        du -sh node_modules
+        cp -r node_modules/ ../cache/tmp1/
+        cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp3/
+        cp -r node_modules/ ../cache/tmp4/
+        du -sh ../cache
+        
+    - name: Test with 7z tar only
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
+        #zstd -V
+        #7z --version
+        echo "Running tar standalone compression then decompression"
+        (Measure-Command { 7z a file.tar cache | Out-Default }).ToString()
+        ls file.tar
+        (Measure-Command { tar -xf file.tar -C windows_tmp | Out-Default }).ToString()
+        rm file.tar
+        rm -r windows_tmp/*
+    
+    - name: Test with tar then zstd
+      run: |
+        echo "Running tar + zstd in two steps compression then decompression"
+        (Measure-Command { tar -cf file_combined.tar cache | Out-Default }).ToString()
+        (Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
+        rm file_combined.tar
+        ls file_combined.tzst
+        (Measure-Command { zstd -d -o file_combined.tar file_combined.tzst | Out-Default }).ToString()
+        (Measure-Command { tar -xf file_combined.tar -C windows_tmp | Out-Default }).ToString()
+        rm file_combined.tzst
+        rm -r windows_tmp/*
