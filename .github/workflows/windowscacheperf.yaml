@@ -1,0 +1,98 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  windows-cache-creation:
+    runs-on: windows-latest
+
+    steps:
+    - name: Create multiple files
+      run: |
+        $ErrorActionPreference = 'SilentlyContinue'
+        echo "Create random files"
+        mkdir windows_tmp
+        mkdir cache
+        git clone https://github.com/telescopejs/telescope.git
+        #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - run: |
+        cd telescope
+        npm install
+        du -sh node_modules
+        cp -r node_modules/ ../cache/tmp1/
+        cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp3/
+        cp -r node_modules/ ../cache/tmp4/
+        du -sh ../cache
+        
+    - uses: actions/cache@v3
+      with:
+        path: cache
+        key: windows-1
+        
+  windows-cache-restoration:
+    runs-on: windows-latest
+    depends-on: windows-cache-creation
+
+    steps:
+    - uses: actions/cache@v3
+      with:
+        path: cache
+        key: windows-1
+        
+    - run: |
+        du -sh cache
+        
+  linux-cache-creation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Create multiple files
+      run: |
+        echo "Create random files"
+        mkdir cache linux_tmp
+        git clone https://github.com/telescopejs/telescope.git
+        #for i in {1..2000}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - run: |
+        cd telescope
+        npm install
+        du -sh node_modules
+        cp -r node_modules/ ../cache/tmp1/
+        cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp3/
+        cp -r node_modules/ ../cache/tmp4/
+        du -sh ../cache
+        
+    - uses: actions/cache@v3
+      with:
+        path: cache
+        key: Linux-1
+        
+   linux-cache-restoration:
+    runs-on: ubuntu-latest
+    depends-on: linux-cache-creation
+
+    steps:
+    - uses: actions/cache@v3
+      with:
+        path: cache
+        key: Linux-1
+        
+    - run: |
+        du -sh cache
