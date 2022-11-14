@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: windows perf
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -43,7 +43,7 @@ jobs:
         
   windows-cache-restoration:
     runs-on: windows-latest
-    depends-on: windows-cache-creation
+    needs: windows-cache-creation
 
     steps:
     - uses: actions/cache@v3
@@ -84,9 +84,9 @@ jobs:
         path: cache
         key: Linux-1
         
-   linux-cache-restoration:
+  linux-cache-restoration:
     runs-on: ubuntu-latest
-    depends-on: linux-cache-creation
+    needs: linux-cache-creation
 
     steps:
     - uses: actions/cache@v3
