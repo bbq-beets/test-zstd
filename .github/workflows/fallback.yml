@@ -1,0 +1,36 @@
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  cross-os:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
+
+    steps:
+    - name: Create multiple files
+      run: |
+        git clone https://github.com/telescopejs/telescope.git
+        
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12.x
+        
+    - uses: pdotl/cache@f042e4f14e003827ad1e82833ff16bb197252ea9
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - run: |
+        cd telescope
+        npm install
+        
+    - name: Test tar only
+      run: |
+        tar -c -O telescope | zstd -o file.tar.zst
