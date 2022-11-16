@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: 12.x
         
-    - uses: pdotl/cache@f042e4f14e003827ad1e82833ff16bb197252ea9
+    - uses: pdotl/cache@main
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
