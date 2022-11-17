@@ -1,4 +1,4 @@
-name: CI
+name: Fallback
 on:
   workflow_dispatch:
   push:
@@ -15,6 +15,7 @@ jobs:
     - name: Create multiple files
       run: |
         git clone https://github.com/telescopejs/telescope.git
+        cd telescope
         
     - uses: actions/setup-node@v3
       with:
@@ -22,14 +23,14 @@ jobs:
         
     - uses: pdotl/cache@main
       with:
-        path: ~/.npm
+        path: .npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node
 
     - run: |
-        cd telescope
         npm install
+      if: steps.cache.outputs.cache-hit != 'true'
         
     - name: Test tar only
       run: |
