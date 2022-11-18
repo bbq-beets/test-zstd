@@ -6,15 +6,21 @@ on:
 
 jobs:
   cross-os:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
+    runs-on: windows-latest 
     steps:
-      - uses: pdotl/cache@main
+      - name: Cache using gnutar + zstd
+        uses: pdotl/cache@main
+        id: pdotl-cache
         with:
           path: cache-folder
-          key: specific-key
+          key: gnutar-zstd-key
+
+      - name: Cache using bsdtar + gzip
+        uses: actions/cache@v3
+        id: actions-cache
+        with:
+          path: cache-folder
+          key: bsdtar-gzip-key
 
       - name: Generate a file
         run: |
@@ -25,3 +31,4 @@ jobs:
           fi
           cat 1GB.bin | openssl dgst -sha256 > sha256.txt
         shell: bash
+        if: steps.pdotl-cache.outputs.cache-hit != 'true' && steps.actions-cache.outputs.cache-hit != 'true'
