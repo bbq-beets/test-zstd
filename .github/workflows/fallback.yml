@@ -14,7 +14,7 @@ jobs:
       - uses: pdotl/cache@main
         with:
           path: cache-folder
-          key: ${{ runner.os }}-large-key
+          key: specific-key
 
       - name: Generate a file
         run: |
