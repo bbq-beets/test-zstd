@@ -24,3 +24,4 @@ jobs:
             dd if=/dev/urandom of=1GB.bin count=1000 bs=1048576
           fi
           cat 1GB.bin | openssl dgst -sha256 > sha256.txt
+        shell: bash
