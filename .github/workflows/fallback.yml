@@ -29,9 +29,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          ls -a
           python -m pip install --upgrade pip
           pip install -r temp/requirements.txt -t temp
         if: steps.pdotl-cache.outputs.cache-hit != 'true' && steps.actions-cache.outputs.cache-hit != 'true'
+        shell: bash
 
 
       # - name: Generate a file
