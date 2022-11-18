@@ -8,27 +8,38 @@ jobs:
   cross-os:
     runs-on: windows-latest 
     steps:
+      - name: Setup python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
       - name: Cache using gnutar + zstd
         uses: pdotl/cache@main
         id: pdotl-cache
         with:
-          path: cache-folder
+          path: temp
           key: gnutar-zstd-key
 
       - name: Cache using bsdtar + gzip
         uses: actions/cache@v3
         id: actions-cache
         with:
-          path: cache-folder
+          path: temp
           key: bsdtar-gzip-key
 
-      - name: Generate a file
+      - name: Install dependencies
         run: |
-          mkdir -p cache-folder
-          cd cache-folder
-          if [ ! -f "1GB.bin" ]; then
-            dd if=/dev/urandom of=1GB.bin count=1000 bs=1048576
-          fi
-          cat 1GB.bin | openssl dgst -sha256 > sha256.txt
-        shell: bash
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -t temp
         if: steps.pdotl-cache.outputs.cache-hit != 'true' && steps.actions-cache.outputs.cache-hit != 'true'
+
+
+      # - name: Generate a file
+      #   run: |
+      #     mkdir -p cache-folder
+      #     cd cache-folder
+      #     if [ ! -f "1GB.bin" ]; then
+      #       dd if=/dev/urandom of=1GB.bin count=1000 bs=1048576
+      #     fi
+      #     cat 1GB.bin | openssl dgst -sha256 > sha256.txt
+      #   shell: bash
