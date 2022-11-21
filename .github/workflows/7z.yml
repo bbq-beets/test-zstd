@@ -53,12 +53,13 @@ jobs:
         zstd -V
         echo "Running tar + zstd in two steps compression then decompression"
         (Measure-Command { tar -cf - cache | zstd -o file_combined.tzst - | Out-Default }).ToString()
+        (Measure-Command { tar -cf file_combined.tar cache | zstd -o file_combined_2.tzst file_combined.tar | Out-Default }).ToString()
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
-        #rm file_combined.tar
-        ls file_combined.tzst
+        rm file_combined.tar
+        ls
         #(Measure-Command { zstd -d -o file_combined.tar file_combined.tzst | Out-Default }).ToString()
         #(Measure-Command { tar -xf file_combined.tar -C windows_tmp | Out-Default }).ToString()
         #(Measure-Command { tar -a -xf file_combined.tzst -P -C windows_tmp | Out-Default }).ToString()
-        rm file_combined.tzst
+        rm file_combined.tzst file_combined_2.tzst
         ls windows_tmp/
         rm -r windows_tmp/*
