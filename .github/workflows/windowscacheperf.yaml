@@ -40,7 +40,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-3
+        key: ${{ runner.os }}-4
         
     - if: ${{ runner.os == 'Windows' }}
       name: Use GNU tar
@@ -53,7 +53,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-GNU-3
+        key: ${{ runner.os }}-GNU-4
         
   windows-cache-restoration:
     runs-on: windows-latest
@@ -65,11 +65,11 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-3
+        key: ${{ runner.os }}-4
         
     - run: |
         du -sh cache
-        rm -rf cache
+        rm cache
     
     - if: ${{ runner.os == 'Windows' }}
       name: Use GNU tar
@@ -82,8 +82,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-GNU-3
+        key: ${{ runner.os }}-GNU-4
         
     - run: |
         du -sh cache
-        rm -rf cache
+        rm cache
