@@ -30,9 +30,9 @@ jobs:
         npm install
         du -sh node_modules
         cp -r node_modules/ ../cache/tmp1/
-        #cp -r node_modules/ ../cache/tmp2/
-        #cp -r node_modules/ ../cache/tmp3/
-        #cp -r node_modules/ ../cache/tmp4/
+        cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp3/
+        cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
         
     - name: Test with 7z tar only
