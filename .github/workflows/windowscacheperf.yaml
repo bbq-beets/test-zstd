@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Create multiple files
+    - name: Create multiple files 100mb
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
