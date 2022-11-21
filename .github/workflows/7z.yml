@@ -52,7 +52,7 @@ jobs:
         tar --version
         zstd -V
         echo "Running tar + zstd in two steps compression then decompression"
-        (Measure-Command { tar -cf - cache @- | zstd -o file_combined.tzst - | Out-Default }).ToString()
+        (Measure-Command { tar -cf - cache | zstd -o file_combined.tzst - | Out-Default }).ToString()
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         rm file_combined.tar
         ls file_combined.tzst
