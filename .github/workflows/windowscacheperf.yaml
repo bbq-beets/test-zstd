@@ -13,14 +13,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Create multiple files 100mb
+    - name: Create multiple files 500mb
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
         mkdir windows_tmp
         mkdir cache
         git clone https://github.com/telescopejs/telescope.git
-        for($i = 1 ; $i -le 100 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        for($i = 1 ; $i -le 500 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - uses: actions/setup-node@v3
       with:
