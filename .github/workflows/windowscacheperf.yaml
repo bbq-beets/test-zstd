@@ -56,4 +56,3 @@ jobs:
         
     - run: |
         du -sh cache
-        rm cache
