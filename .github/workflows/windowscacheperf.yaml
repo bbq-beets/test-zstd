@@ -40,20 +40,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-4
-        
-    - if: ${{ runner.os == 'Windows' }}
-      name: Use GNU tar
-      shell: cmd
-      run: |
-        echo "Adding GNU tar to PATH"
-        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-    - name: GNUtar caching
-      uses: actions/cache@v3
-      with:
-        path: cache
-        key: ${{ runner.os }}-GNU-4
+        key: ${{ runner.os }}-5
         
   windows-cache-restoration:
     runs-on: windows-latest
@@ -65,24 +52,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-4
-        
-    - run: |
-        du -sh cache
-        rm cache
-    
-    - if: ${{ runner.os == 'Windows' }}
-      name: Use GNU tar
-      shell: cmd
-      run: |
-        echo "Adding GNU tar to PATH"
-        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-    - name: GNUtar caching
-      uses: actions/cache@v3
-      with:
-        path: cache
-        key: ${{ runner.os }}-GNU-4
+        key: ${{ runner.os }}-5
         
     - run: |
         du -sh cache
