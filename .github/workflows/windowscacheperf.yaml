@@ -13,14 +13,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Create multiple files 2000mb
+    - name: Create multiple files 100mb
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
         mkdir windows_tmp
         mkdir cache
         git clone https://github.com/telescopejs/telescope.git
-        for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        for($i = 1 ; $i -le 100 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - uses: actions/setup-node@v3
       with:
@@ -36,23 +36,36 @@ jobs:
         #cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
 
-    - name: BSDtar caching
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    - name: GNUtar caching
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-${{ github.run_id }}
+        key: ${{ runner.os }}-GNU-${{ github.run_id }}
         
   windows-cache-restoration:
     runs-on: windows-latest
     needs: windows-cache-creation
 
     steps:
-    
-    - name: BSdtar caching
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    - name: GNUtar caching
       uses: actions/cache@v3
       with:
         path: cache
-        key: ${{ runner.os }}-${{ github.run_id}}
+        key: ${{ runner.os }}-GNU-${{ github.run_id}}
         
     - run: |
         du -sh cache
