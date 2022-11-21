@@ -20,7 +20,7 @@ jobs:
         mkdir windows_tmp
         mkdir cache
         git clone https://github.com/telescopejs/telescope.git
-        #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
+        for($i = 1 ; $i -le 100 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - uses: actions/setup-node@v3
       with:
@@ -28,18 +28,32 @@ jobs:
         
     - run: |
         cd telescope
-        npm install
+        #npm install
         du -sh node_modules
-        cp -r node_modules/ ../cache/tmp1/
-        cp -r node_modules/ ../cache/tmp2/
-        cp -r node_modules/ ../cache/tmp3/
-        cp -r node_modules/ ../cache/tmp4/
+        #cp -r node_modules/ ../cache/tmp1/
+        #cp -r node_modules/ ../cache/tmp2/
+        #cp -r node_modules/ ../cache/tmp3/
+        #cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
 
-    - uses: actions/cache@v3
+    - name: BSDtar caching
+      uses: actions/cache@v3
       with:
         path: cache
-        key: windows-2
+        key: ${{ runner.os }}-3
+        
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+    - name: GNUtar caching
+      uses: actions/cache@v3
+      with:
+        path: cache
+        key: ${{ runner.os }}-GNU-3
         
   windows-cache-restoration:
     runs-on: windows-latest
@@ -47,96 +61,29 @@ jobs:
 
     steps:
     
-    - uses: actions/cache@v3
+    - name: BSdtar caching
+      uses: actions/cache@v3
       with:
         path: cache
-        key: windows-2
+        key: ${{ runner.os }}-3
         
     - run: |
         du -sh cache
-        
-  linux-cache-creation:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Create multiple files
+        rm -rf cache
+    
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
       run: |
-        echo "Create random files"
-        mkdir cache linux_tmp
-        git clone https://github.com/telescopejs/telescope.git
-        #for i in {1..2000}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
         
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 12.x
-        
-    - run: |
-        cd telescope
-        npm install
-        du -sh node_modules
-        cp -r node_modules/ ../cache/tmp1/
-        cp -r node_modules/ ../cache/tmp2/
-        cp -r node_modules/ ../cache/tmp3/
-        cp -r node_modules/ ../cache/tmp4/
-        du -sh ../cache
-        
-    - uses: actions/cache@v3
+    - name: GNUtar caching
+      uses: actions/cache@v3
       with:
         path: cache
-        key: Linux-2
-        
-  linux-cache-restoration:
-    runs-on: ubuntu-latest
-    needs: linux-cache-creation
-
-    steps:
-    - uses: actions/cache@v3
-      with:
-        path: cache
-        key: Linux-2
+        key: ${{ runner.os }}-GNU-3
         
     - run: |
         du -sh cache
-
-  mac-cache-creation:
-    runs-on: macos-latest
-
-    steps:
-    - name: Create multiple files
-      run: |
-        echo "Create random files"
-        mkdir cache linux_tmp
-        git clone https://github.com/telescopejs/telescope.git
-        #for i in {1..2000}; do  dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i; done
-        
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 12.x
-        
-    - run: |
-        cd telescope
-        npm install
-        du -sh node_modules
-        cp -r node_modules/ ../cache/tmp1/
-        cp -r node_modules/ ../cache/tmp2/
-        cp -r node_modules/ ../cache/tmp3/
-        cp -r node_modules/ ../cache/tmp4/
-        du -sh ../cache
-        
-    - uses: actions/cache@v3
-      with:
-        path: cache
-        key: mac-2
-        
-  mac-cache-restoration:
-    runs-on: macos-latest
-    needs: mac-cache-creation
-
-    steps:
-    - uses: actions/cache@v3
-      with:
-        path: cache
-        key: mac-2
-        
-    - run: |
-        du -sh cache
+        rm -rf cache
