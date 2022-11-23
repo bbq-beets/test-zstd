@@ -36,7 +36,14 @@ jobs:
         #cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
 
-    - name: BSDtar caching
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+    - name: GNUtar caching
       uses: actions/cache@v3
       with:
         path: cache
@@ -47,8 +54,14 @@ jobs:
     needs: windows-cache-creation
 
     steps:
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
 
-    - name: BSDtar caching
+    - name: GNUtar caching
       uses: actions/cache@v3
       with:
         path: cache
