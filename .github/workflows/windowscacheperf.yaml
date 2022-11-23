@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Create multiple files npm
+    - name: Create multiple files npm 450MB
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
@@ -31,9 +31,9 @@ jobs:
         npm install
         du -sh node_modules
         cp -r node_modules/ ../cache/tmp1/
-        cp -r node_modules/ ../cache/tmp2/
-        cp -r node_modules/ ../cache/tmp3/
-        cp -r node_modules/ ../cache/tmp4/
+        #cp -r node_modules/ ../cache/tmp2/
+        #cp -r node_modules/ ../cache/tmp3/
+        #cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
 
     - name: BSDtar caching
