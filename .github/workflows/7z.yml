@@ -57,7 +57,7 @@ jobs:
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         rm file_combined.tar
         ls
-        (Measure-Command { zstd -d -o file_combined.tar file_combined_2.tzst && tar -xf file_combined.tar -C windows_tmp | Out-Default }).ToString()
+        (Measure-Command { zstd -d -o file_combined.tar file_combined_2.tzst && tar -tf file_combined.tar -P | Out-Default }).ToString()
         #(Measure-Command { tar -xf file_combined.tar -C windows_tmp | Out-Default }).ToString()
         #(Measure-Command { tar -a -xf file_combined.tzst -P -C windows_tmp | Out-Default }).ToString()
         #rm file_combined.tzst
