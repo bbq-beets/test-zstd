@@ -13,13 +13,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Create multiple files npm 450MB
+    - name: Create multiple files npm 700MB
       run: |
         $ErrorActionPreference = 'SilentlyContinue'
         echo "Create random files"
         mkdir windows_tmp
         mkdir cache
-        git clone https://github.com/telescopejs/telescope.git
+        git clone https://github.com/typicode/hotel.git
         #for($i = 1 ; $i -le 2000 ; $i++) { dd if=/dev/urandom bs=1048576 count=1 of=cache/file$i }
         
     - uses: actions/setup-node@v3
@@ -27,11 +27,11 @@ jobs:
         node-version: 12.x
         
     - run: |
-        cd telescope
+        cd hotel
         npm install
         du -sh node_modules
         cp -r node_modules/ ../cache/tmp1/
-        #cp -r node_modules/ ../cache/tmp2/
+        cp -r node_modules/ ../cache/tmp2/
         #cp -r node_modules/ ../cache/tmp3/
         #cp -r node_modules/ ../cache/tmp4/
         du -sh ../cache
