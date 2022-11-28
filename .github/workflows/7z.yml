@@ -60,7 +60,7 @@ jobs:
         which tar
         zstd -V
         echo "Running tar + zstd in two steps compression then decompression"
-        (Measure-Command { tar --posix --use-compress-program "zstd -T0 --fast=10" -cf cache.tzst --exclude cache.tzst -P cache --force-local | Out-Default }).ToString()
+        (Measure-Command { tar --posix --use-compress-program "zstd -T0 --fast=100" -cf cache.tzst --exclude cache.tzst -P cache --force-local | Out-Default }).ToString()
         #(Measure-Command { tar -cf file_combined.tar cache && zstd -o file_combined_2.tzst file_combined.tar | Out-Default }).ToString()
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         #rm file_combined.tar
