@@ -47,18 +47,25 @@ jobs:
         #rm file.tar
         rm -r windows_tmp/*
     
+    - if: ${{ runner.os == 'Windows' }}
+      name: Use GNU tar
+      shell: cmd
+      run: |
+        echo "Adding GNU tar to PATH"
+        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+    
     - name: Test with tar then zstd
       run: |
         tar --version
         zstd -V
         echo "Running tar + zstd in two steps compression then decompression"
-        (Measure-Command { "C:\Program Files\Git\usr\bin\tar.exe" --use-compress-program "zstd -T0 -1" -cf cache.tzst --exclude cache.tzst -P -C windows_tmp cache --force-local | Out-Default }).ToString()
+        (Measure-Command { tar --posix --use-compress-program "zstd -T0 -1" -cf cache.tzst --exclude cache.tzst -P -C windows_tmp cache --force-local | Out-Default }).ToString()
         #(Measure-Command { tar -cf file_combined.tar cache && zstd -o file_combined_2.tzst file_combined.tar | Out-Default }).ToString()
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         #rm file_combined.tar
         ls
         #(Measure-Command { zstd -d -o file_combined.tar file_combined_2.tzst && tar -tf file_combined.tar -P | Out-Default }).ToString()
-        (Measure-Command { "C:\Program Files\Git\usr\bin\tar.exe" --use-compress-program "zstd -d" -xf cache.tzst -P -C windows_tmp --force-local | Out-Default }).ToString()
+        (Measure-Command { tar --use-compress-program "zstd -d" -xf cache.tzst -P -C windows_tmp --force-local | Out-Default }).ToString()
         #(Measure-Command { tar -a -xf file_combined.tzst -P -C windows_tmp | Out-Default }).ToString()
         #rm file_combined.tzst
         ls windows_tmp/
