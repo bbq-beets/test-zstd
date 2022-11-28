@@ -41,7 +41,7 @@ jobs:
         #zstd -V
         #7z --version
         echo "Running tar standalone compression then decompression"
-        (Measure-Command { 7z a file.tar cache | Out-Default }).ToString()
+        (Measure-Command { 7z a -m0=zstd file.tar cache | Out-Default }).ToString()
         ls file.tar
         (Measure-Command { tar -xf file.tar -C windows_tmp | Out-Default }).ToString()
         rm file.tar
@@ -52,7 +52,7 @@ jobs:
         tar --version
         zstd -V
         echo "Running tar + zstd in two steps compression then decompression"
-        (Measure-Command { "C:\Program Files\Git\usr\bin\tar.exe" --posix --use-compress-program "zstd -T0 -1" -cf cache.tzst --exclude cache.tzst -P -C windows_tmp cache --force-local | Out-Default }).ToString()
+        (Measure-Command { "C:\Program Files\Git\usr\bin\tar.exe" --use-compress-program "zstd -T0 -1" -cf cache.tzst --exclude cache.tzst -P -C windows_tmp cache --force-local | Out-Default }).ToString()
         #(Measure-Command { tar -cf file_combined.tar cache && zstd -o file_combined_2.tzst file_combined.tar | Out-Default }).ToString()
         #(Measure-Command { zstd -o file_combined.tzst file_combined.tar | Out-Default }).ToString()
         #rm file_combined.tar
