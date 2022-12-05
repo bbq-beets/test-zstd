@@ -23,12 +23,12 @@ jobs:
 
   restore:
     needs: upload
-    if: ${{ matrix.os }} != ${{ matrix.key }}
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         key: [ubuntu-latest, windows-latest, macos-latest]
+    if: ${{ matrix.os }} != ${{ matrix.key }}
+    runs-on: ${{ matrix.os }}
     name: runner-cache restore (${{ matrix.os }}) with key (${{ matrix.key }})
     steps:
     - uses: actions/checkout@v3
