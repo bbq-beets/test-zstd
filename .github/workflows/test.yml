@@ -19,7 +19,7 @@ jobs:
     - uses: actions/cache@v3.1.0-beta
       with:
         path: test-cache
-        key: runner-${{ github.run_number }}-${{ github.run_attempt }}
+        key: ${{ matrix-os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}
 
   restore:
     needs: upload
@@ -27,14 +27,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    name: runner-cache restore (${{ matrix.os }})
+        key: [ubuntu-latest, windows-latest, macos-latest]
+    name: runner-cache restore (${{ matrix.os }}) with key (${{ matrix.key }})
     steps:
     - uses: actions/checkout@v3
     - uses: actions/cache@v3.1.0-beta
+      if: ${{ matrix.os }} != ${{ matrix.key }}
       id: cache
       with:
         path: test-cache
-        key: runner-${{ github.run_number }}-${{ github.run_attempt }}
+        key: ${{ matrix.key }}-runner-${{ github.run_number }}-${{ github.run_attempt }}
 
     - name: Fail if cache not found
       if: steps.cache.outputs.cache-hit != 'true'
