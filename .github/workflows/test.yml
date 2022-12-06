@@ -17,7 +17,7 @@ jobs:
       run: |
         mkdir test-cache
         echo "foo" > test-cache/test.txt
-        if [ ${{ matrix.os }} == "ubuntu-latest" ]; then md5sum test-cache/test.txt; exit 0; else md5 test-cache/test.txt; exit 0; fi
+        if [ ${{ matrix.os }} == "ubuntu-latest" ]; then md5sum test-cache/test.txt; exit 0; elif [ ${{ matrix.os }} == "macos-latest" ]; then md5 test-cache/test.txt; exit 0; else certutil -hashfile test-cache/test.txt MD5 fi
     - uses: actions/cache@v3.1.0-beta
       with:
         path: test-cache
