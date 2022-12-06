@@ -13,10 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Create file to cache
+      shell: bash
       run: |
         mkdir test-cache
-        echo "foo" > test-cache/test
-        md5sum test-cache/test
+        echo "foo" > test-cache/test.txt
+        if [ ${{ matrix.os }} == "ubuntu-latest" ]; then md5sum test-cache/test.txt; exit 0; else md5 test-cache/test.txt; exit 0; fi
     - uses: actions/cache@v3.1.0-beta
       with:
         path: test-cache
