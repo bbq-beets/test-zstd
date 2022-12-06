@@ -15,7 +15,8 @@ jobs:
     - name: Create file to cache
       run: |
         mkdir test-cache
-        echo "foo" > test-cache/test.txt
+        echo "foo" > test-cache/test
+        md5sum test-cache/test
     - uses: actions/cache@v3.1.0-beta
       with:
         path: test-cache
