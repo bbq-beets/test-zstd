@@ -1,4 +1,4 @@
-name: runner-cache-cross-os
+name: fallback restore with gzip
 
 on:
   workflow_dispatch:
