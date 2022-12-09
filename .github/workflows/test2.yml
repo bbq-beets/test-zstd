@@ -19,7 +19,7 @@ jobs:
         echo "foo" > test-cache/test.txt
     - shell: cmd
       run: |
-        rm C:\Program Files\Git\usr\bin\tar.exe
+        rm "C:\Program Files\Git\usr\bin\tar.exe"
     - uses: actions/cache@v3.1.0-beta
       with:
         path: test-cache
