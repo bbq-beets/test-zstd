@@ -17,10 +17,7 @@ jobs:
       run: |
         mkdir test-cache
         echo "foo" > test-cache/test.txt
-    - shell: cmd
-      run: |
-        rm "C:\Program Files\Git\usr\bin\tar.exe"
-    - uses: actions/cache@v3.1.0-beta
+    - uses: actions/cache@v3
       with:
         path: test-cache
         key: ${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}
@@ -35,11 +32,34 @@ jobs:
     name: runner-cache restore (${{ matrix.os }}) with key (${{ matrix.key }})
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3.1.0-beta.2
-      id: cache
       with:
-        path: test-cache
-        key: ${{ matrix.key }}-runner-${{ github.run_number }}-${{ github.run_attempt }}
+        repository: actions/toolkit
+        ref: phantsure/cache-testing
+    
+    - name: Set Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    # In order to save & restore cache from a shell script, certain env variables need to be set that are only available in the
+    # node context. This runs a local action that gets and sets the necessary env variables that are needed
+    - name: Set env variables
+      uses: ./packages/cache/__tests__/__fixtures__/
+
+    # Need root node_modules because certain npm packages like jest are configured for the entire repository and it won't be possible
+    # without these to just compile the cache package
+    - name: Install root npm packages
+      run: npm ci
+
+    - name: Compile cache package
+      run: |
+        npm ci
+        npm run tsc
+      working-directory: packages/cache
+
+    - name: Restore cache using restoreCache() with http-client
+      run: |
+        node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache','~/test-cache'],'${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
 
     - name: Fail if cache not found
       if: steps.cache.outputs.cache-hit != 'true'
