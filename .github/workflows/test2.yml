@@ -61,11 +61,6 @@ jobs:
       run: |
         node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache','~/test-cache'],'${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
 
-    - name: Fail if cache not found
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        echo "Cache not found, upload failed"
-        exit 1
     - name: Output cache content
       run: |
         cat test-cache/test.txt
