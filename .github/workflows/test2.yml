@@ -59,7 +59,7 @@ jobs:
 
     - name: Restore cache using restoreCache() with http-client
       run: |
-        node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache','~/test-cache'],'${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
+        node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache'],'${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
 
     - name: Output cache content
       run: |
