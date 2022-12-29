@@ -1,4 +1,4 @@
-name: fallback restore with gzip
+name: symlink
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest]
     name: runner-cache upload (${{ matrix.os }})
     steps:
     - uses: actions/checkout@v3
@@ -17,7 +17,8 @@ jobs:
       run: |
         mkdir test-cache
         echo "foo" > test-cache/test.txt
-    - uses: actions/cache@v3.1.0-beta
+        ln -s ./test.txt test-cache/link.txt
+    - uses: actions/cache@v3.2.1
       with:
         path: test-cache
         key: ${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}
@@ -27,14 +28,14 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        key: [windows-latest]
+        key: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     name: runner-cache restore (${{ matrix.os }}) with key (${{ matrix.key }})
     steps:
     - uses: actions/checkout@v3
       with:
         repository: actions/toolkit
-        ref: phantsure/version-logging
+        ref: revert-1289-revert-1281-phantsure/compression-changes-release
     
     - name: Set Node.js 12.x
       uses: actions/setup-node@v1
@@ -59,10 +60,11 @@ jobs:
 
     - name: Restore cache using restoreCache() with http-client
       run: |
-        node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache'],'${{ matrix.os }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
+        node -e "Promise.resolve(require('./packages/cache/lib/cache').restoreCache(['test-cache'],'${{ matrix.key }}-runner-${{ github.run_number }}-${{ github.run_attempt }}',[],{useAzureSdk: false}))"
 
     - name: Output cache content
       run: |
+        ls test-cache/
         cat test-cache/test.txt
     - name: Check cache contents
       shell: bash
