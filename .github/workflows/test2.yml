@@ -35,7 +35,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         repository: actions/toolkit
-        ref: main
+        ref: b2287326447a6d61c109af734947c7608be85900
         #ref: revert-1289-revert-1281-phantsure/compression-changes-release
     
     - name: Set Node.js 12.x
